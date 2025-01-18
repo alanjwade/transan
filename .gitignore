@@ -1,0 +1,12 @@
+
+
+# Ignore Python compiled files
+*.pyc
+__pycache__/
+
+# Ignore IDE and editor files
+.vscode/
+
+
+# Ignore CSV files
+*.csv
