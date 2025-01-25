@@ -14,12 +14,12 @@ data = data[data['Date'] >= '2023-02-01']
 loader.dump_intermediate(data, 'intermediate.csv')
 
 
+print(data.head())
 
 
+# monthly_totals(data)
 
-monthly_totals(data)
-
-rolling_12_month_average(data)
+# rolling_12_month_average(data)
 
 # categories = list_of_categories(data)
 # print(categories)

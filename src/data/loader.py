@@ -28,7 +28,8 @@ class BankDataLoader:
         df = self.split_category(df)
         df = self.create_income_expense_col(df)
         df = df[['Date', 'Description', 'Amount', 'Income', 'Expense', 
-                    'Category', 'Category1',  'Category2', 'Category3','Account', 'Tag']]  # Keep only the specified columns
+                    'Category', 'Category1',  'Category2', 'Category3', 
+                    'Category12', 'Category123', 'Account', 'Tag']]  # Keep only the specified columns
         return df
         
     def create_income_expense_col(self, data: pd.DataFrame) -> pd.DataFrame:
@@ -46,10 +47,12 @@ class BankDataLoader:
         return mapping_df
    
     def split_category(self, data: pd.DataFrame) -> pd.DataFrame:
-        category_split = data['Category'].str.split(':', expand=True)
+        category_split = data['Category'].str.split(':', expand=True).fillna('Unassigned')
         data['Category1'] = category_split[0]
-        data['Category2'] = category_split[1] if category_split.shape[1] > 1 else pd.NA
-        data['Category3'] = category_split[2] if category_split.shape[1] > 2 else pd.NA
+        data['Category2'] = category_split[1] if category_split.shape[1] > 1 else 'Unassigned'
+        data['Category3'] = category_split[2] if category_split.shape[1] > 2 else 'Unassigned'
+        data['Category12'] = data['Category1'] + ':' + data['Category2']
+        data['Category123'] = data['Category1'] + ':' + data['Category2'] + ':' + data['Category3']
         return data
     
     def load_statements(self) -> pd.DataFrame:
