@@ -85,3 +85,33 @@ def list_of_categories(data):
     # Get unique categories from the 'Category' column
     categories = data['Category'].unique()
     return categories
+
+
+def rolling_12M_avg_category(df, column='Category1'):
+
+    df['Date'] = pd.to_datetime(df['Date'])
+    df['Month'] = df['Date'].dt.to_period('M')
+    df['Amount'] = df['Amount'].fillna(0)
+
+    # Group by month
+    # df['Amount']
+
+    df_group = df.groupby([pd.Grouper(key='Month'), column])['Amount'].sum().reset_index()
+    # Ensure every month/category12 pair has a valid value, which is 0 if NaN
+    df_group = df_group.pivot(index='Month', columns=column, values='Amount').fillna(0).reset_index()
+    df_group = df_group.melt(id_vars=['Month'], var_name=column, value_name='Amount')
+    # with pd.option_context('display.max_rows', None):
+    #     print(df_group) 
+    # df_group
+
+    # # Calculate the rolling average
+    df_group['Rolling_Avg'] = df_group.groupby(column)['Amount'].transform(lambda x: x.rolling(window=12, min_periods=1).mean())
+
+    # # Pivot to create a column for each category
+    df_group = df_group.pivot(index=column, columns='Month', values='Rolling_Avg').reset_index()
+    df_group = df_group.round(2)
+
+    # Filter columns to show only months after 2024-01
+    df_group = df_group[[column] + [col for col in df_group.columns if not str(col).startswith('Category') and str(col) >= '2024-01']]
+
+    return df_group
