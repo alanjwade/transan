@@ -62,6 +62,7 @@ def rolling_12_month_average(data, column='Amount'):
     data = data[~data['Tag'].fillna('').str.contains('#IBondRedemption', flags=re.IGNORECASE, regex=True)]
     data = data[~data['Tag'].fillna('').str.contains('#exclude_car', flags=re.IGNORECASE, regex=True)]
     data = data[~data['Tag'].fillna('').str.contains('#exclude_Janet529', flags=re.IGNORECASE, regex=True)]
+    data = data[~data['Tag'].fillna('').str.contains('#exclude_theft', flags=re.IGNORECASE, regex=True)]
 
 
     # Ensure the 'Date' column is in datetime format
@@ -80,6 +81,12 @@ def rolling_12_month_average(data, column='Amount'):
     print(monthly_sums)
 
     return monthly_sums
+
+def exclude_transactions(data, exclude_tags):
+    # Exclude transactions with tags in the 'Tag' column
+    for tag in exclude_tags:
+        data = data[~data['Tag'].fillna('').str.contains(tag, flags=re.IGNORECASE, regex=True)]
+    return data
 
 def list_of_categories(data):
     # Get unique categories from the 'Category' column
